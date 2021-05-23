@@ -23,12 +23,13 @@ def get_listings(request):
         check_out_obj = datetime.strptime(check_out, '%Y-%m-%d')
     
     qs_reserved_room_count = BlockDay.objects \
-        .filter(booking = OuterRef('pk')) \
+        .filter(booking = OuterRef('pk')) # TODO add date filter \ 
         .values('booking') \
         .annotate(reserved_count = Count('*')) \
         .values('reserved_count') \
 
     available_bookigs = BookingInfo.objects \
+        .filter() # Todo max pirce filter \
         .annotate(rooms_count = Count('hotel_room_type__hotel_rooms'), reserved_count = functions.Coalesce(Subquery(qs_reserved_room_count), 0)) \
         .filter(Q(rooms_count__gt = F('reserved_count')) | Q(Q(listing__isnull = False) & Q(reserved_count = 0)))
 
